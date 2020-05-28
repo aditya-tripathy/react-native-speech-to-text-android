@@ -1,8 +1,8 @@
 {
-  "name": "react-native-speech-to-text",
+  "name": "react-native-google-speech-to-text",
   "title": "React Native Speech To Text",
-  "version": "1.0.0",
-  "description": "TODO",
+  "version": "1.0.1",
+  "description": "React Native Speech To Text for android",
   "main": "index.js",
   "files": [
     "README.md",
@@ -16,15 +16,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/github_account/react-native-speech-to-text.git",
-    "baseUrl": "https://github.com/github_account/react-native-speech-to-text"
+    "url": "git+https://github.com/Thronie/react-native-speech-to-text-android.git",
+    "baseUrl": "https://github.com/Thronie/react-native-speech-to-text-android"
   },
   "keywords": [
     "react-native"
   ],
   "author": {
-    "name": "Your Name",
-    "email": "yourname@email.com"
+    "name": "Aditya Kumar Tripathy",
+    "email": "aditya.tripathy93@gmail.com"
   },
   "license": "MIT",
   "licenseFilename": "LICENSE",
