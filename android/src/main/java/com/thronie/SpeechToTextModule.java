@@ -26,6 +26,41 @@ public class SpeechToTextModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
     private Promise speechTextPromise;
 
+    private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
+        //listener for activity
+        @Override
+        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+            if (speechTextPromise != null) {
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        ArrayList < String > result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                        speechTextPromise.resolve(result.get(0));
+                        speechTextPromise = null;
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        speechTextPromise.reject("Failed", ErrorConstants.E_VOICE_CANCELLED);
+                        speechTextPromise = null;
+                        break;
+                    case RecognizerIntent.RESULT_AUDIO_ERROR:
+                        speechTextPromise.reject("Failed", ErrorConstants.E_AUDIO_ERROR);
+                        speechTextPromise = null;
+                        break;
+                    case RecognizerIntent.RESULT_NETWORK_ERROR:
+                        speechTextPromise.reject("Failed", ErrorConstants.E_NETWORK_ERROR);
+                        speechTextPromise = null;
+                        break;
+                    case RecognizerIntent.RESULT_NO_MATCH:
+                        speechTextPromise.reject("Failed", ErrorConstants.E_NO_MATCH);
+                        speechTextPromise = null;
+                        break;
+                    case RecognizerIntent.RESULT_SERVER_ERROR:
+                        speechTextPromise.reject("Failed", ErrorConstants.E_SERVER_ERROR);
+                        speechTextPromise = null;
+                        break;
+                }
+            }
+        }
+    };
 
     public SpeechToTextModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -50,57 +85,22 @@ public class SpeechToTextModule extends ReactContextBaseJavaModule {
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, getLocale(locale));
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, getPrompt(prompt));
         try {
-            this.reactContext.startActivityForResult(intent, 5864, null);
+            this.reactContext.startActivityForResult(intent, 5834, null);
         } catch (Exception e) {
             speechTextPromise.reject("Failed", ErrorConstants.E_FAILED_TO_SHOW_VOICE);
             speechTextPromise = null;
         }
     }
 
-    private final ActivityEventListener mActivityEventListener = new BaseActivityEventListener() {
-        //listener for activity
-
-        @Override
-        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-            switch (resultCode) {
-                case Activity.RESULT_OK:
-                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    speechTextPromise.resolve(result.get(0));
-                    speechTextPromise = null;
-                    break;
-                case Activity.RESULT_CANCELED:
-                    speechTextPromise.reject("Failed", ErrorConstants.E_VOICE_CANCELLED);
-                    speechTextPromise = null;
-                    break;
-                case RecognizerIntent.RESULT_AUDIO_ERROR:
-                    speechTextPromise.reject("Failed", ErrorConstants.E_AUDIO_ERROR);
-                    speechTextPromise = null;
-                    break;
-                case RecognizerIntent.RESULT_NETWORK_ERROR:
-                    speechTextPromise.reject("Failed", ErrorConstants.E_NETWORK_ERROR);
-                    speechTextPromise = null;
-                    break;
-                case RecognizerIntent.RESULT_NO_MATCH:
-                    speechTextPromise.reject("Failed", ErrorConstants.E_NO_MATCH);
-                    speechTextPromise = null;
-                    break;
-                case RecognizerIntent.RESULT_SERVER_ERROR:
-                    speechTextPromise.reject("Failed", ErrorConstants.E_SERVER_ERROR);
-                    speechTextPromise = null;
-                    break;
-            }
-        }
-    };
 
     private String getPrompt(String prompt) {
         if (prompt != null && !prompt.equals("")) {
             return prompt;
         }
-
         return "Say something";
     }
 
@@ -108,7 +108,6 @@ public class SpeechToTextModule extends ReactContextBaseJavaModule {
         if (locale != null && !locale.equals("")) {
             return locale;
         }
-
         return Locale.getDefault().toString();
     }
 }
